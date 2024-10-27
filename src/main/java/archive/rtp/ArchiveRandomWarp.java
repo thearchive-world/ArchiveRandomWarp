@@ -5,16 +5,30 @@ import de.codingair.warpsystem.api.TeleportService;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
+import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public final class ArchiveRandomWarp extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        TranslationRegistry translationRegistry = TranslationRegistry.create(Key.key("archive.rtp"));
+        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.get());
+        translationRegistry.registerAll(Locale.US, bundle, true);
+        GlobalTranslator.translator().addSource(translationRegistry);
+
         LifecycleEventManager<Plugin> manager = this.getLifecycleManager();
         manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
@@ -40,9 +54,13 @@ public final class ArchiveRandomWarp extends JavaPlugin {
         var simpleWarps = List.copyOf(teleportService.simpleWarps());
         if (simpleWarps.isEmpty()) return;
         var randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
+
+        var component = Component
+            .translatable("archive.rtp.warping", Component.text(randomWarp).color(NamedTextColor.AQUA)).color(NamedTextColor.GRAY);
+        var msg = LegacyComponentSerializer.legacySection().serialize(component);
         var options = teleportService.options()
             .setDestination(teleportService.destinationBuilder().simpleWarpDestination(randomWarp))
-            .setMessage("Teleporting to " + randomWarp)
+            .setMessage(msg)
             .setPermission("%NO_PERMISSION%")
             .setSkip(true);
         teleportService.teleport(player, options);
