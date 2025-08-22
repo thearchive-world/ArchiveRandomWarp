@@ -22,6 +22,8 @@ import java.util.ResourceBundle;
 
 public final class ArchiveRandomWarp extends JavaPlugin {
 
+    private static final double SM_LODGE_REROLL = 0.5;  // 0-1 chance to reroll
+
     @Override
     public void onEnable() {
         var translationRegistry = TranslationStore.messageFormat(Key.key("archive.rtp"));
@@ -54,7 +56,7 @@ public final class ArchiveRandomWarp extends JavaPlugin {
         var simpleWarps = List.copyOf(teleportService.simpleWarps());
         if (simpleWarps.isEmpty()) return;
         var randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
-        if (randomWarp.toLowerCase().contains("spawnmason_lodge")) {
+        if (randomWarp.toLowerCase().contains("spawnmason_lodge") && Math.random() < SM_LODGE_REROLL) {
             randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
         }
 
