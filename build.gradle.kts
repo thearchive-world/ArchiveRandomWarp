@@ -1,6 +1,6 @@
 plugins {
     `java`
-    id("com.gradleup.shadow") version "8.3.3"
+    id("com.gradleup.shadow") version "9.0.2"
 }
 
 group = "archive.rtp"
@@ -23,7 +23,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
     compileOnly("com.github.CodingAir:WarpSystem-API:5.1.6")
-    compileOnly("com.github.CodingAir:CodingAPI:1.89")
+    compileOnly("com.github.CodingAir:CodingAPI:1.97")
 }
 
 val targetJavaVersion = 21

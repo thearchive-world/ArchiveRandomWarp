@@ -10,7 +10,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
-import net.kyori.adventure.translation.TranslationRegistry;
+import net.kyori.adventure.translation.TranslationStore;
 import net.kyori.adventure.util.UTF8ResourceBundleControl;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -24,8 +24,8 @@ public final class ArchiveRandomWarp extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        TranslationRegistry translationRegistry = TranslationRegistry.create(Key.key("archive.rtp"));
-        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.get());
+        var translationRegistry = TranslationStore.messageFormat(Key.key("archive.rtp"));
+        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.utf8ResourceBundleControl());
         translationRegistry.registerAll(Locale.US, bundle, true);
         GlobalTranslator.translator().addSource(translationRegistry);
 
