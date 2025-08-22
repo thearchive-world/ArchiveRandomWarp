@@ -54,6 +54,9 @@ public final class ArchiveRandomWarp extends JavaPlugin {
         var simpleWarps = List.copyOf(teleportService.simpleWarps());
         if (simpleWarps.isEmpty()) return;
         var randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
+        if (randomWarp.toLowerCase().contains("spawnmason_lodge")) {
+            randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
+        }
 
         var component = Component
             .translatable("archive.rtp.warping", Component.text(randomWarp).color(NamedTextColor.AQUA)).color(NamedTextColor.GRAY);
