@@ -1,6 +1,6 @@
 plugins {
     `java`
-    id("com.gradleup.shadow") version "9.0.2"
+    id("com.gradleup.shadow") version "9.2.2"
 }
 
 group = "archive.rtp"
@@ -43,9 +43,10 @@ tasks {
     }
 
     processResources {
+        val projectVersion = project.version
         filesMatching("plugin.yml") {
             val props = mapOf(
-                "version" to project.version,
+                "version" to projectVersion,
                 "api_version" to apiVersion
             )
             filteringCharset = "UTF-8"
