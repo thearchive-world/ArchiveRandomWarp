@@ -67,7 +67,7 @@ public final class ArchiveRandomWarp extends JavaPlugin {
             .setDestination(teleportService.destinationBuilder().simpleWarpDestination(randomWarp))
             .setMessage(msg)
             .setPermission("%NO_PERMISSION%")
-            .setSkip(true);
+            .setDisplayName(randomWarp);
         teleportService.teleport(player, options);
     }
 
