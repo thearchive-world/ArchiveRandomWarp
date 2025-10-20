@@ -62,10 +62,6 @@ tasks {
     shadowJar {
         archiveClassifier = ""
         relocate("de.codingair.codingapi", "de.codingair.warpsystem.lib.codingapi")
-
-        manifest {
-            attributes["paperweight-mappings-namespace"] = "mojang"
-        }
     }
 
     build {
