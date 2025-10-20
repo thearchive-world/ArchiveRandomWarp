@@ -1,0 +1,14 @@
+name: ArchiveRandomWarp
+version: '${version}'
+main: archive.rtp.ArchiveRandomWarp
+description: Random warp teleportation for WarpSystem
+api-version: '${api_version}'
+authors:
+  - thearchive.world
+
+dependencies:
+  server:
+    WarpSystem:
+      load: BEFORE
+      required: true
+      join-classpath: true

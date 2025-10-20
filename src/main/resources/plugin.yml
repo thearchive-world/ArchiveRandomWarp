@@ -1,5 +1,0 @@
-name: ArchiveRandomWarp
-version: '${version}'
-main: archive.rtp.ArchiveRandomWarp
-api-version: '${api_version}'
-depend: [WarpSystem]

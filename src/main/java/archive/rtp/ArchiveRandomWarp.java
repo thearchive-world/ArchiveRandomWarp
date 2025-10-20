@@ -27,7 +27,7 @@ public final class ArchiveRandomWarp extends JavaPlugin {
     @Override
     public void onEnable() {
         var translationRegistry = TranslationStore.messageFormat(Key.key("archive.rtp"));
-        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.utf8ResourceBundleControl());
+        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.get());
         translationRegistry.registerAll(Locale.US, bundle, true);
         GlobalTranslator.translator().addSource(translationRegistry);
 
@@ -39,7 +39,9 @@ public final class ArchiveRandomWarp extends JavaPlugin {
                     .requires(ctx -> ctx.getSender().hasPermission("warpsystem.use.simplewarps"))
                     .executes(ctx -> {
                         if (!(ctx.getSource().getExecutor() instanceof Player)) {
-                            ctx.getSource().getSender().sendMessage("Only players can use this command");
+                            ctx.getSource().getSender().sendMessage(
+                                Component.translatable("archive.rtp.players_only")
+                            );
                             return Command.SINGLE_SUCCESS;
                         }
                         teleport((Player) ctx.getSource().getExecutor());

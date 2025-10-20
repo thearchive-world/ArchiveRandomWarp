@@ -40,11 +40,12 @@ tasks {
     withType(JavaCompile::class).configureEach {
         options.encoding = "UTF-8"
         options.release.set(targetJavaVersion)
+        options.compilerArgs.add("-Xlint:deprecation")
     }
 
     processResources {
         val projectVersion = project.version
-        filesMatching("plugin.yml") {
+        filesMatching("paper-plugin.yml") {
             val props = mapOf(
                 "version" to projectVersion,
                 "api_version" to apiVersion
