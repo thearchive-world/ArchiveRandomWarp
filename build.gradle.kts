@@ -5,7 +5,6 @@ plugins {
 
 group = "archive.rtp"
 version = project.property("plugin_version")!!.toString()
-val apiVersion = project.property("api_version").toString()
 
 repositories {
     mavenCentral()
@@ -21,7 +20,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:$apiVersion-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:${property("paper_api")}")
     compileOnly("com.github.CodingAir:WarpSystem-API:5.1.6")
     compileOnly("com.github.CodingAir:CodingAPI:1.97")
 }
@@ -44,12 +43,11 @@ tasks {
     }
 
     processResources {
-        val projectVersion = project.version
+        val props = mapOf(
+            "version" to project.version,
+            "api_version" to project.property("api_version")
+        )
         filesMatching("paper-plugin.yml") {
-            val props = mapOf(
-                "version" to projectVersion,
-                "api_version" to apiVersion
-            )
             filteringCharset = "UTF-8"
             expand(props)
         }

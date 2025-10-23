@@ -8,7 +8,6 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.kyori.adventure.translation.GlobalTranslator;
 import net.kyori.adventure.translation.TranslationStore;
 import net.kyori.adventure.util.UTF8ResourceBundleControl;
@@ -27,7 +26,7 @@ public final class ArchiveRandomWarp extends JavaPlugin {
     @Override
     public void onEnable() {
         var translationRegistry = TranslationStore.messageFormat(Key.key("archive.rtp"));
-        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.get());
+        ResourceBundle bundle = ResourceBundle.getBundle("archive.rtp.Bundle", Locale.US, UTF8ResourceBundleControl.utf8ResourceBundleControl());
         translationRegistry.registerAll(Locale.US, bundle, true);
         GlobalTranslator.translator().addSource(translationRegistry);
 
@@ -35,45 +34,70 @@ public final class ArchiveRandomWarp extends JavaPlugin {
         manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             commands.register(
-                Commands.literal("rwarp")
+                Commands.literal("randomwarp")
                     .requires(ctx -> ctx.getSender().hasPermission("warpsystem.use.simplewarps"))
                     .executes(ctx -> {
-                        if (!(ctx.getSource().getExecutor() instanceof Player)) {
+                        if (!(ctx.getSource().getExecutor() instanceof Player player)) {
                             ctx.getSource().getSender().sendMessage(
                                 Component.translatable("archive.rtp.players_only")
                             );
                             return Command.SINGLE_SUCCESS;
                         }
-                        teleport((Player) ctx.getSource().getExecutor());
+                        this.teleport(player);
                         return Command.SINGLE_SUCCESS;
                     })
                     .build(),
-                "Teleport to a random warp"
+                "Teleport to a random warp",
+                List.of("rw")
             );
         });
     }
 
-    public static void teleport(Player player) {
+    /**
+     * Teleports a player to a random warp using WarpSystem-API with history tracking
+     *
+     * @param player the player to teleport
+     */
+    private void teleport(Player player) {
         var teleportService = TeleportService.get();
+
+        if (teleportService == null) {
+            player.sendMessage(
+                Component.text("WarpSystem plugin not found!", NamedTextColor.RED)
+            );
+            getLogger().warning("WarpSystem not loaded - cannot teleport " + player.getName());
+            return;
+        }
+
         var simpleWarps = List.copyOf(teleportService.simpleWarps());
-        if (simpleWarps.isEmpty()) return;
+        if (simpleWarps.isEmpty()) {
+            player.sendMessage(
+                Component.text("No warps available!", NamedTextColor.RED)
+            );
+            return;
+        }
+
+        // Select random warp
         var randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
+
+        // Reroll logic: 50% chance to reroll if spawnmason_lodge is selected
         if (randomWarp.toLowerCase().contains("spawnmason_lodge") && Math.random() < SM_LODGE_REROLL) {
             randomWarp = simpleWarps.get((int) (Math.random() * simpleWarps.size()));
         }
 
-        var component = Component
-            .translatable("archive.rtp.warping", Component.text(randomWarp).color(NamedTextColor.AQUA)).color(NamedTextColor.GRAY);
-        var msg = LegacyComponentSerializer.legacySection().serialize(component);
+        // Build destination and options
+        var destination = teleportService.destinationBuilder()
+            .simpleWarpDestination(randomWarp);
         var options = teleportService.options()
-            .setDestination(teleportService.destinationBuilder().simpleWarpDestination(randomWarp))
-            .setMessage(msg)
-            .setPermission("%NO_PERMISSION%")
-            .setDisplayName(randomWarp);
+            .setDestination(destination)
+            .setDisplayName(randomWarp);  // For history tracking
+
+        // Execute teleport
         teleportService.teleport(player, options);
     }
 
     @Override
     public void onDisable() {
+        getLogger().info("ArchiveRandomWarp disabled successfully");
     }
 }
